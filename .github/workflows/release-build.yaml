@@ -15,7 +15,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          repository: 'https://github.com/apache/ranger.git'
+          repository: apache/ranger
           ref: '72f6c57'
 
       - name: Setup node
