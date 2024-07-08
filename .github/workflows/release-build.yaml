@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: apache/ranger
-          ref: '72f6c57'
+          ref: 'master'
 
       - name: Setup node
         uses: actions/setup-node@v4
@@ -36,4 +36,8 @@ jobs:
         with:
           python-version: '3.11'
 
+      - run: git checkout 72f6c57
+        name: checkout commit
+
       - run: mvn -DskipTests package
+        name: build
