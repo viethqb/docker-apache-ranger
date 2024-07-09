@@ -1,0 +1,55 @@
+services:
+  postgres:
+    image: docker.io/bitnami/postgresql:16.3.0
+    environment:
+      - POSTGRESQL_PASSWORD=postgres123AA
+    volumes:
+      - ranger-postgres:/bitnami/postgresql
+    networks:
+      - ranger
+    
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ranger-elasticsearch:/usr/share/elasticsearch/data
+    networks:
+      - ranger
+
+  ranger:
+    image: hienphdev/ranger-admin:3.0.0-72f6c57
+    container_name: ranger
+    depends_on:
+      - postgres
+      - elasticsearch
+    networks:
+      - ranger
+    ports:
+      - "6080:6080"
+    command:
+      - /home/ranger/scripts/ranger.sh
+    volumes:
+      - ./configs/ranger-admin-install.properties:/opt/ranger/admin/install.properties
+      - ./configs/ranger-admin-install.properties:/home/ranger/scripts/ranger-admin-install.properties
+
+  ranger-usersync:
+    image: hienphdev/ranger-usersync:3.0.0-72f6c57
+    container_name: ranger-usersync
+    networks:
+      - ranger
+    depends_on:
+      ranger:
+        condition: service_started
+volumes:
+  ranger-postgres:
+  ranger-elasticsearch:
+networks:
+  ranger:
+

@@ -1,20 +1,24 @@
 services:
   ranger-build:
+    container_name: ranger-build
     build:
-      context: .
+      context: ../
       dockerfile: ./ranger-build/Dockerfile
     environment:
-      REVISION: '72f6c57'
-    user: "1000:1000"
+      MAVEN_OPTS: -Dmaven.repo.local=/tmp/.m2
+      HOME: /tmp
+      BUILD_USER: ${BUILD_USER}
+      PARALLEL: ${PARALLEL}
+    env_file:
+      - .env
     volumes:
-      - ./build-src:/build-src
-      - /tmp/.m2:/root/.m2
+      - ../build-src:/build-src:rw
+      - ${M2_CACHE}:/tmp/.m2
+      - ./clone-n-build.sh:/usr/local/bin/clone-n-build.sh
     command:
       - bash
       - -c
       - |
-        cd /build-src
-        RUN git clone https://github.com/apache/ranger.git
-        cd ranger
-        git checkout ${REVISION}
-        mvn -T $(proc)C package -DskipTests
+          useradd -u ${BUILD_USER} -m -s /bin/bash build 
+          su -c
+          su build -c "clone-n-build.sh"
