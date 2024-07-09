@@ -2,7 +2,7 @@ services:
   ranger-build:
     container_name: ranger-build
     build:
-      context: ../
+      context: .
       dockerfile: ./ranger-build/Dockerfile
     environment:
       MAVEN_OPTS: -Dmaven.repo.local=/tmp/.m2
@@ -12,9 +12,9 @@ services:
     env_file:
       - .env
     volumes:
-      - ../build-src:/build-src:rw
+      - ./build-src:/build-src:rw
       - ${M2_CACHE}:/tmp/.m2
-      - ./clone-n-build.sh:/usr/local/bin/clone-n-build.sh
+      - ./ranger-build/clone-n-build.sh:/usr/local/bin/clone-n-build.sh
     command:
       - bash
       - -c
