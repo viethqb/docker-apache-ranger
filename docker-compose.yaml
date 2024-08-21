@@ -4,21 +4,24 @@ services:
     build:
       context: .
       dockerfile: ./ranger-build/Dockerfile
+      args:
+        BUILD_USER: ${BUILD_USER}
     environment:
       MAVEN_OPTS: -Dmaven.repo.local=/tmp/.m2
       HOME: /tmp
       BUILD_USER: ${BUILD_USER}
       PARALLEL: ${PARALLEL}
+    user: ${BUILD_USER}
+    userns_mode: keep-id:uid=${BUILD_USER}
     env_file:
       - .env
     volumes:
-      - ./build-src:/build-src:rw
-      - ${M2_CACHE}:/tmp/.m2
-      - ./ranger-build/clone-n-build.sh:/usr/local/bin/clone-n-build.sh
+      - ./build-src:/build-src:rw,z,U
+      - ${M2_CACHE}:/tmp/.m2:rw,z,U
+      - ./ranger-build/clone-n-build.sh:/usr/local/bin/clone-n-build.sh:rw,z,U
     command:
       - bash
       - -c
       - |
-          useradd -u ${BUILD_USER} -m -s /bin/bash build 
-          su -c
-          su build -c "clone-n-build.sh"
+        sleep infinity
+# su build -c "clone-n-build.sh"
