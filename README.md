@@ -20,6 +20,16 @@ docker compose up
 # this will took hours to complete
 ```
 
+**Notes**
+Add the bellow repo if a jetbrains package is missing
+
+```xml
+<repository>
+  <id>jetbrains-intellij-dependencies</id>
+  <url>https://packages.jetbrains.team/maven/p/ij/intellij-dependencies</url>
+</repository>
+```
+
 Scripts pull ranger source code into `./build-src/ranger` and target build is at `./build-src/ranger/target`
 After built sucessfully, start build admin and usersync image
 

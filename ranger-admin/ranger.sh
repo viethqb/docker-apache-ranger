@@ -29,5 +29,6 @@ if [ -z "$RANGER_ADMIN_PID" ]
 then
   echo "Ranger Admin process probably exited, no process id found!"
 else
-  tail --pid=$RANGER_ADMIN_PID -f /dev/null
+  # tail --pid=$RANGER_ADMIN_PID -f /dev/null
+  tail -f /var/log/ranger/*
 fi

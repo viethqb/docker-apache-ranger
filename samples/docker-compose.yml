@@ -4,27 +4,28 @@ services:
     environment:
       - POSTGRESQL_PASSWORD=postgres123AA
     volumes:
-      - ranger-postgres:/bitnami/postgresql
+      - ranger-postgres:/bitnami/postgresql:rw
     networks:
       - ranger
     
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.1
     environment:
+      - node.name=es01
+      - cluster.name=es
       - discovery.type=single-node
-      - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:
       memlock:
         soft: -1
         hard: -1
     volumes:
-      - ranger-elasticsearch:/usr/share/elasticsearch/data
+      - ranger-elasticsearch:/usr/share/elasticsearch/data:rw,Z
     networks:
       - ranger
 
   ranger:
-    image: hienphdev/ranger-admin:3.0.0-72f6c57
+    image: hienphdev/ranger-admin:${VERSION}-${REVISION}
     container_name: ranger
     depends_on:
       - postgres
@@ -36,14 +37,15 @@ services:
     command:
       - /home/ranger/scripts/ranger.sh
     volumes:
-      - ./configs/ranger-admin-install.properties:/opt/ranger/admin/install.properties
-      - ./configs/ranger-admin-install.properties:/home/ranger/scripts/ranger-admin-install.properties
+      - ./configs/ranger-admin-install.properties:/opt/ranger/admin/install.properties:Z,ro
 
   ranger-usersync:
-    image: hienphdev/ranger-usersync:3.0.0-72f6c57
+    image: hienphdev/ranger-usersync:${VERSION}-${REVISION}
     container_name: ranger-usersync
     networks:
       - ranger
+    volumes:
+      - ./configs/ranger-usersync-install.properties:/opt/ranger/usersync/install.properties:Z,ro
     depends_on:
       ranger:
         condition: service_started

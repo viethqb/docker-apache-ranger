@@ -12,7 +12,7 @@ services:
       BUILD_USER: ${BUILD_USER}
       PARALLEL: ${PARALLEL}
     user: ${BUILD_USER}
-    userns_mode: keep-id:uid=${BUILD_USER}
+    # userns_mode: keep-id:uid=${BUILD_USER}
     env_file:
       - .env
     volumes:

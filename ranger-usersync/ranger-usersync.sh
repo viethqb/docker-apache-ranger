@@ -18,7 +18,7 @@ then
   fi
 fi
 
-cd ${RANGER_HOME}/usersync && ./start.sh
+/usr/bin/ranger-usersync start
 
 RANGER_USERSYNC_PID=`ps -ef  | grep -v grep | grep -i "org.apache.ranger.authentication.UnixAuthenticationService" | awk '{print $2}'`
 
@@ -27,5 +27,6 @@ if [ -z "$RANGER_USERSYNC_PID" ]
 then
   echo "The UserSync process probably exited, no process id found!"
 else
-  tail --pid=$RANGER_USERSYNC_PID -f /dev/null
+  # tail --pid=$RANGER_USERSYNC_PID -f /dev/null
+  tail -f ${RANGER_HOME}/usersync/logs/*
 fi
