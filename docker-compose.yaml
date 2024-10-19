@@ -7,21 +7,23 @@ services:
       args:
         BUILD_USER: ${BUILD_USER}
     environment:
-      MAVEN_OPTS: -Dmaven.repo.local=/tmp/.m2
-      HOME: /tmp
+      MAVEN_CONFIG: /home/build/.m2
+      HOME: /home/build
       BUILD_USER: ${BUILD_USER}
       PARALLEL: ${PARALLEL}
     user: ${BUILD_USER}
     # userns_mode: keep-id:uid=${BUILD_USER}
+    working_dir: /home/build
     env_file:
       - .env
     volumes:
       - ./build-src:/build-src:rw,z,U
-      - ${M2_CACHE}:/tmp/.m2:rw,z,U
+      - ${M2_CACHE}:/home/build/.m2:rw,z,U
       - ./ranger-build/clone-n-build.sh:/usr/local/bin/clone-n-build.sh:rw,z,U
     command:
       - bash
       - -c
       - |
         sleep infinity
-# su build -c "clone-n-build.sh"
+        clone-n-build.sh
+        # su build -c "clone-n-build.sh"

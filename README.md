@@ -20,23 +20,13 @@ docker compose up
 # this will took hours to complete
 ```
 
-**Notes**
-Add the bellow repo if a jetbrains package is missing
-
-```xml
-<repository>
-  <id>jetbrains-intellij-dependencies</id>
-  <url>https://packages.jetbrains.team/maven/p/ij/intellij-dependencies</url>
-</repository>
-```
-
 Scripts pull ranger source code into `./build-src/ranger` and target build is at `./build-src/ranger/target`
 After built sucessfully, start build admin and usersync image
 
 ```bash
-docker build . --build-arg VERSION=${VERSION} --build-arg REVISION=${REVISION} -t docker.io/hienphdev/ranger-admin:${VERSION}-${REVISION} -f ./ranger-admin/Dockerfile
+docker build . --build-arg VERSION=${VERSION} --build-arg REVISION=${REVISION} -t ghcr.io/hienduyph/ranger-admin:${VERSION}-${REVISION} -f ./ranger-admin/Dockerfile
 
-docker build . --build-arg VERSION=${VERSION} --build-arg REVISION=${REVISION} -t docker.io/hienphdev/ranger-usersync:${VERSION}-${REVISION} -f ./ranger-usersync/Dockerfile
+docker build . --build-arg VERSION=${VERSION} --build-arg REVISION=${REVISION} -t ghcr.io/hienduyph/ranger-usersync:${VERSION}-${REVISION} -f ./ranger-usersync/Dockerfile
 ```
 
 ## Run samples
