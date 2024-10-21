@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+if [ -f "${RANGER_SCRIPTS}/ranger-usersync-install.properties" ]; then
+  cp -f ${RANGER_SCRIPTS}/ranger-usersync-install.properties ${RANGER_HOME}/usersync/install.properties
+fi
+
+if [ -d "/tmp/conf.dist" ]; then
+  cp -r /tmp/conf.dist ${RANGER_HOME}/usersync/conf.dist/
+fi
+
 if [ ! -e ${RANGER_HOME}/.setupDone ]
 then
   SETUP_RANGER=true
@@ -17,6 +25,7 @@ then
     echo "Ranger UserSync Setup Script didn't complete proper execution."
   fi
 fi
+
 
 /usr/bin/ranger-usersync start
 
