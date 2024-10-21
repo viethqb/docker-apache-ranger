@@ -5,7 +5,7 @@ if [ -f "${RANGER_SCRIPTS}/ranger-usersync-install.properties" ]; then
 fi
 
 if [ -d "/tmp/conf.dist" ]; then
-  cp -r /tmp/conf.dist ${RANGER_HOME}/usersync/conf.dist/
+  cp -r /tmp/conf.dist/* ${RANGER_HOME}/usersync/conf.dist/
 fi
 
 if [ ! -e ${RANGER_HOME}/.setupDone ]
@@ -37,5 +37,5 @@ then
   echo "The UserSync process probably exited, no process id found!"
 else
   # tail --pid=$RANGER_USERSYNC_PID -f /dev/null
-  tail -f ${RANGER_HOME}/usersync/logs/*
+  tail -f ${RANGER_HOME}/usersync/logs/* /var/log/ranger/usersync/*
 fi
