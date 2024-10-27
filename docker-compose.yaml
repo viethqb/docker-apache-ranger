@@ -7,6 +7,7 @@ services:
       args:
         BUILD_USER: ${BUILD_USER}
     environment:
+      MAVEN_OPTS: -Dmaven.repo.local=/home/build/.m2
       MAVEN_CONFIG: /home/build/.m2
       HOME: /home/build
       BUILD_USER: ${BUILD_USER}
@@ -24,6 +25,4 @@ services:
       - bash
       - -c
       - |
-        sleep infinity
         clone-n-build.sh
-        # su build -c "clone-n-build.sh"
