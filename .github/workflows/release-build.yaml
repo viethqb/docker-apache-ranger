@@ -23,7 +23,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: apache/ranger
-          ref: ${{ github.ref_name }}
           path: build-src/ranger
 
       - name: Setup node
@@ -55,6 +54,7 @@ jobs:
       - name: Build ranger
         working-directory: build-src/ranger
         run: |
+          git checkout ${{ github.ref_name }}
           mvn versions:set -DnewVersion=${{env.VERSION }}-${{ github.ref_name }}
           mvn -DskipTests package
 
