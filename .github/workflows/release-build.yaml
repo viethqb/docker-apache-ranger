@@ -1,16 +1,20 @@
 name: Relase Build
 on:
   push:
-    branches:
-      - main
+    tags:
+      - '*'
 
-permissions:
-  contents: read
-  pull-requests: read
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: hienduyph/ranger
+  VERSION: 3.0.0
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packages: write
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,12 +41,17 @@ jobs:
         with:
           python-version: '3.11'
 
-      - run: apt update && apt install gcc -y
+      - run: apt update && apt install gcc curl -y
         name: install core packages
 
 
-      - run: git checkout 72f6c57
-        name: checkout commit
+      - run: |
+          git checkout ${{env.GITHUB_REF_NAME}}
+        name: checkout commit ${{env.GITHUB_REF_NAME}}
+
+      - name: update version
+        run: |
+          mvn versions:set -DnewVersion=${{env.VERSION}}-${{env.GITHUB_REF_NAME}}
 
       - run: mvn -DskipTests package
         name: build
@@ -60,20 +69,27 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Check version
-        id: version
-        run: |
-          if [[ "${{ steps.meta.outputs.version }}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
-            echo "ver=${{ steps.meta.outputs.version }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "ver=" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Build and push Docker image
+      - name: Ranger Admin Docker
         uses: docker/build-push-action@v6
         with:
           context: .
+          file: ./ranger-admin/Dockerfile
           push: true
-          tags: 72f6c57
+          tags: admin-${{env.VERSION}}-${{env.GITHUB_REF_NAME}}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: "RANGER_VERSION=72f6c57"
+          build-args: |
+            REVISION=${{env.GITHUB_REF_NAME}}
+            VERSION=${{env.VERSION}}
+          
+
+      - name: Ranger UserSync Docker
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./ranger-usersync/Dockerfile
+          push: true
+          tags: usersync-${{env.VERSION}}-${{env.GITHUB_REF_NAME}}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            REVISION=${{env.GITHUB_REF_NAME}}
+            VERSION=${{env.VERSION}
