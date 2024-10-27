@@ -49,11 +49,17 @@ jobs:
       - run: sudo apt update && sudo apt install gcc curl -y
         name: install core packages
 
+      - run: ls -la && ls -la build-src/ranger
+        name: Debug working directory
+
       - name: Build ranger
         working-directory: build-src/ranger
         run: |
           mvn versions:set -DnewVersion=${{env.VERSION }}-${{ github.ref_name }}
           mvn -DskipTests package
+
+      - name: Artifacts
+        run: ls -la build-src/ranger/target
 
       - name: Log in to the Container registry
         uses: docker/login-action@v3
