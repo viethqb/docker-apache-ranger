@@ -38,8 +38,6 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           architecture: x64
-          cache: maven
-          cache-dependency-path: build-src/ranger/pom.xml
 
       - uses: actions/setup-python@v5
         with:
@@ -51,11 +49,23 @@ jobs:
       - run: ls -la && ls -la build-src/ranger
         name: Debug working directory
 
-      - name: Build ranger
+      - name: Checkout revision
         working-directory: build-src/ranger
         run: |
           git checkout ${{ github.ref_name }}
           mvn versions:set -DnewVersion=${{env.VERSION }}-${{ github.ref_name }}
+
+      - name: Cache local Maven repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('build-src/ranger/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build ranger
+        working-directory: build-src/ranger
+        run: |
           mvn -DskipTests package
 
       - name: Artifacts
@@ -74,13 +84,18 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ranger-${{env.VERSION}}-${{github.ref_name}}
+          path: build-src/ranger/target/*.tar.gz
+
       - name: Ranger Admin Docker
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./ranger-admin/Dockerfile
           push: true
-          tags: admin-${{env.VERSION}}-${{github.ref_name}}
+          tags: ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:admin-${{env.VERSION}}-${{github.ref_name}}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             REVISION=${{github.ref_name}}
@@ -93,7 +108,7 @@ jobs:
           context: .
           file: ./ranger-usersync/Dockerfile
           push: true
-          tags: usersync-${{env.VERSION}}-${{github.ref_name}}
+          tags: ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:usersync-${{env.VERSION}}-${{github.ref_name}}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             REVISION=${{github.ref_name}}
