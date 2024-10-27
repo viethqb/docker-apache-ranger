@@ -41,7 +41,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - run: sudo apt update && apt install gcc curl -y
+      - run: sudo apt update && sudo apt install gcc curl -y
         name: install core packages
 
 
