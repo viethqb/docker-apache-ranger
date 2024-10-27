@@ -45,13 +45,12 @@ jobs:
         name: install core packages
 
 
-      - run: |
-          git checkout ${{env.GITHUB_REF_NAME}}
-        name: checkout commit ${{env.GITHUB_REF_NAME}}
+      - run: git checkout "${{ github.ref_name }}"
+        name: checkout commit ${{ github.ref_name }}
 
       - name: update version
         run: |
-          mvn versions:set -DnewVersion=${{env.VERSION}}-${{env.GITHUB_REF_NAME}}
+          mvn versions:set -DnewVersion=${{env .VERSION }}-${{ github.ref_name }}
 
       - run: mvn -DskipTests package
         name: build
@@ -75,10 +74,10 @@ jobs:
           context: .
           file: ./ranger-admin/Dockerfile
           push: true
-          tags: admin-${{env.VERSION}}-${{env.GITHUB_REF_NAME}}
+          tags: admin-${{env.VERSION}}-${{github.ref_name}}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            REVISION=${{env.GITHUB_REF_NAME}}
+            REVISION=${{github.ref_name}}
             VERSION=${{env.VERSION}}
           
 
@@ -88,8 +87,8 @@ jobs:
           context: .
           file: ./ranger-usersync/Dockerfile
           push: true
-          tags: usersync-${{env.VERSION}}-${{env.GITHUB_REF_NAME}}
+          tags: usersync-${{env.VERSION}}-${{github.ref_name}}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            REVISION=${{env.GITHUB_REF_NAME}}
-            VERSION=${{env.VERSION}
+            REVISION=${{github.ref_name}}
+            VERSION=${{env.VERSION}}
